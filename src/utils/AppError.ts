@@ -1,4 +1,4 @@
-import { ErrorCodes } from 'src/types/StatusCode.enum';
+import { ErrorCodes } from 'src/types/statusCode.enum';
 
 export class AppError extends Error {
   public status: number | undefined;
