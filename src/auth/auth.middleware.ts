@@ -2,9 +2,9 @@ import { HttpStatus, Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response, NextFunction } from 'express';
 import { Model } from 'mongoose';
-import { ErrorCodes } from 'src/types/StatusCode.enum';
+import { ErrorCodes } from 'src/types/statusCode.enum';
 import { User } from 'src/users/users.schema';
-import { AppError, ErrorResponse } from 'src/utils/AppError';
+import { AppError, ErrorResponse } from 'src/utils/appError';
 import { RegisterData } from './dto/register.dto';
 
 @Injectable()
