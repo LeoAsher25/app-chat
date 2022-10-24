@@ -1,10 +1,13 @@
-import { HttpStatus, Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { Model } from 'mongoose';
-import { ErrorCodes } from 'src/types/statusCode.enum';
 import { User } from 'src/users/users.schema';
-import { AppError, ErrorResponse } from 'src/utils/appError';
 import { RegisterData } from './dto/register.dto';
 
 @Injectable()
@@ -21,25 +24,28 @@ export default class AuthMiddleware {
       !requestData.firstName ||
       !requestData.lastName
     ) {
-      return res
-        .status(HttpStatus.OK)
-        .json(
-          ErrorResponse(ErrorCodes.BAD_REQUEST, 'Fill in requirement fields'),
-        );
-      // throw new AppError(
-      //   HttpStatus.BAD_REQUEST,
-      //   ErrorCodes.BAD_REQUEST,
-      //   'Fill in requirement fields',
-      // );
+      // return res
+      //   .status(HttpStatus.OK)
+      //   .json(
+      //     ErrorResponse(HttpStatus.BAD_REQUEST, 'Fill in requirement fields'),
+      //   );
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Fill in requirement fields',
+      });
     }
     const user = await this.userModel.findOne({
       username: requestData.username,
     });
     if (user) {
       console.log('user: ', user);
-      return res
-        .status(HttpStatus.CONFLICT)
-        .json(ErrorResponse(ErrorCodes.CONFLICT, 'Username is already in use'));
+      // return res
+      //   .status(HttpStatus.CONFLICT)
+      //   .json(ErrorResponse(HttpStatus.CONFLICT, 'Username is already in use'));
+      throw new ConflictException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Username is already in use',
+      });
     }
 
     next();
@@ -48,7 +54,7 @@ export default class AuthMiddleware {
     req: Request,
     res: Response,
     next: (error?: any) => void,
-  ): Promise<Response> {
+  ): Promise<void> {
     console.log('this: ', this);
     const requestData: RegisterData = req.body;
     if (
@@ -57,25 +63,27 @@ export default class AuthMiddleware {
       !requestData.firstName ||
       !requestData.lastName
     ) {
-      return res
-        .status(HttpStatus.OK)
-        .json(
-          ErrorResponse(ErrorCodes.BAD_REQUEST, 'Fill in requirement fields'),
-        );
-      // throw new AppError(
-      //   HttpStatus.BAD_REQUEST,
-      //   ErrorCodes.BAD_REQUEST,
-      //   'Fill in requirement fields',
-      // );
+      // return res
+      //   .status(HttpStatus.OK)
+      //   .json(
+      //     ErrorResponse(HttpStatus.BAD_REQUEST, 'Fill in requirement fields'),
+      //   );
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Fill in requirement fields',
+      });
     }
     const user = await this.userModel.findOne({
       username: requestData.username,
     });
     if (user) {
-      console.log('user: ', user);
-      return res
-        .status(HttpStatus.CONFLICT)
-        .json(ErrorResponse(ErrorCodes.CONFLICT, 'Username is already in use'));
+      // return res
+      //   .status(HttpStatus.CONFLICT)
+      //   .json(ErrorResponse(HttpStatus.CONFLICT, 'Username is already in use'));
+      throw new ConflictException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'Username is already in use',
+      });
     }
 
     next();
