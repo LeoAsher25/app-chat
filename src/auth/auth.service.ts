@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/users/users.schema';
+import { authConstants } from './constants';
+import { JwtPayload } from './dto/auth.interface';
 import { RegisterData } from './dto/register.dto';
 
 @Injectable()
@@ -30,5 +32,27 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async verifyToken(token: string): Promise<User> {
+    if (!token) return null;
+    try {
+      const payload: JwtPayload = await this.jwtService.verify(token, {
+        secret: authConstants.secret,
+      });
+      console.log('payload: ', payload);
+      const user: User = await this.userModel
+        .findOne({ _id: payload.sub })
+        .lean();
+      if (!user)
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+        });
+      return user;
+    } catch (err) {
+      // throw new Error({ message: err.message });
+      return null;
+    }
   }
 }
