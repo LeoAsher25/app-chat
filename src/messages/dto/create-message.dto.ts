@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { IsObjectId } from 'src/common/decorators/validations/IsObjectId';
+// import { IsObjectId } from 'src/common/decorators/validations/IsObjectId';
+import { IsObjectId } from '../../common/decorators/validations/IsObjectId';
 
 export class CreateMessageDto {
   @IsNotEmpty()
