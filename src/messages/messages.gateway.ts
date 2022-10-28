@@ -31,14 +31,11 @@ export class MessagesGateway
 
   async handleConnection(client: Socket): Promise<void> {
     const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
-    console.log('accessToken: ', accessToken);
     const fromUser = await this.authService.verifyToken(accessToken);
-    console.log('fromUser: ', fromUser);
     if (!fromUser) client.disconnect();
     else {
-      client.join(fromUser.id);
+      client.join(fromUser._id);
       this.clients[client.id] = fromUser._id;
-      console.log('client: ', this.clients);
       client.emit('general', {
         message: 'Connected!',
       });
@@ -49,29 +46,30 @@ export class MessagesGateway
     delete this.clients[client.id];
   }
 
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: string): void {
-    // this.server.emit('message', message);
-    console.log('on message11: ', message);
-  }
-
   @SubscribeMessage('send')
   async create(
     @ConnectedSocket() client: Socket,
     @MessageBody() createMessageDto: CreateMessageDto,
   ) {
     const newMessage = await this.messagesService.create(createMessageDto);
-    // this.server.to(createMessageDto.)
     const room = await this.rommsService.findOne(createMessageDto.roomId);
-    const id = room.members.map((item) => item.toString());
-    // room.members
-    //   .map((item) => item.toString())
-    //   .filter((item) => item !== newMessage.senderId.toString())
-    //   .at(0);
-    console.log('sent: ', id);
-    this.server.to(id).emit('sent', newMessage, (res) => {
-      console.log('res: ', res);
-    });
+
+    // get list of client id in the room
+    const stringIdList = room.members.map((item) => item.toString());
+    const keys = Object.keys(this.clients).reduce((acc, cur) => {
+      if (stringIdList.includes(this.clients[cur].toString())) {
+        acc.push(cur);
+      }
+      return acc;
+    }, []);
+
+    // emit sent event to client sending message
+    this.server.to(client.id.toString()).emit('sent', newMessage);
+
+    // emit sent event to the others in the room
+    this.server
+      .to(keys.filter((item) => item !== client.id.toString()))
+      .emit('message', newMessage);
     return newMessage;
   }
 }
