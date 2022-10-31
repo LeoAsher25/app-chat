@@ -1,3 +1,4 @@
+import { HttpStatus, UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -6,9 +7,11 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { AllExceptionsFilter } from 'src/common/decorators/filters/WsExceptionFilter';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
@@ -32,8 +35,12 @@ export class MessagesGateway
   async handleConnection(client: Socket): Promise<void> {
     const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
     const fromUser = await this.authService.verifyToken(accessToken);
-    if (!fromUser) client.disconnect();
-    else {
+    if (!fromUser) {
+      client.emit('general', {
+        message: 'Unauthorization!',
+      });
+      client.disconnect();
+    } else {
       client.join(fromUser._id);
       this.clients[client.id] = fromUser._id;
       client.emit('general', {
@@ -46,13 +53,26 @@ export class MessagesGateway
     delete this.clients[client.id];
   }
 
+  @UseFilters(new AllExceptionsFilter())
   @SubscribeMessage('send')
   async create(
     @ConnectedSocket() client: Socket,
     @MessageBody() createMessageDto: CreateMessageDto,
   ) {
-    const newMessage = await this.messagesService.create(createMessageDto);
-    const room = await this.rommsService.findOne(createMessageDto.roomId);
+    const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
+    const fromUser = await this.authService.verifyToken(accessToken);
+    createMessageDto.senderId = fromUser._id;
+
+    const { room, newMessage } = await this.messagesService.create(
+      createMessageDto,
+    );
+
+    if (!room) {
+      throw new WsException({
+        error: 'Bad Request',
+        message: 'Id not found',
+      });
+    }
 
     // get list of client id in the room
     const stringIdList = room.members.map((item) => item.toString());
@@ -65,11 +85,13 @@ export class MessagesGateway
 
     // emit sent event to client sending message
     this.server.to(client.id.toString()).emit('sent', newMessage);
+    client.emit('sentt', newMessage);
 
     // emit sent event to the others in the room
     this.server
       .to(keys.filter((item) => item !== client.id.toString()))
       .emit('message', newMessage);
+    console.log('newMessage: ', newMessage);
     return newMessage;
   }
 }

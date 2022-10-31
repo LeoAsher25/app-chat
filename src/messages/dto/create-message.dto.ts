@@ -7,7 +7,7 @@ export class CreateMessageDto {
   @IsString()
   text: string;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @IsObjectId()
   senderId: string;
 

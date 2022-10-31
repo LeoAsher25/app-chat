@@ -10,6 +10,6 @@ import { Room, RoomSchema } from './rooms.schema';
   imports: [
     MongooseModule.forFeature([{ name: Room.name, schema: RoomSchema }]),
   ],
-  exports: [RoomsService],
+  exports: [RoomsService, MongooseModule],
 })
 export class RoomsModule {}

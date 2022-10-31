@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { WsException } from '@nestjs/websockets';
 import { Model } from 'mongoose';
+import { Room } from 'src/rooms/rooms.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { Message } from './messages.schema';
@@ -9,11 +11,24 @@ import { Message } from './messages.schema';
 export class MessagesService {
   constructor(
     @InjectModel(Message.name) private readonly messageModel: Model<Message>,
+    @InjectModel(Room.name) private readonly roomModel: Model<Room>,
   ) {}
 
   async create(createMessageDto: CreateMessageDto) {
     const newMessage = new this.messageModel(createMessageDto);
-    return await newMessage.save();
+    const room = await this.roomModel
+      .findOneAndUpdate(
+        {
+          _id: createMessageDto.roomId,
+        },
+        {
+          $push: {
+            messages: newMessage,
+          },
+        },
+      )
+      .lean();
+    return { room, newMessage };
   }
 
   findAll() {
