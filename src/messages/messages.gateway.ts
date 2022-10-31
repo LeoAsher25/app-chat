@@ -84,14 +84,10 @@ export class MessagesGateway
     }, []);
 
     // emit sent event to client sending message
-    this.server.to(client.id.toString()).emit('sent', newMessage);
-    client.emit('sentt', newMessage);
+    // this.server.to(client.id.toString()).emit('sent', newMessage);
 
     // emit sent event to the others in the room
-    this.server
-      .to(keys.filter((item) => item !== client.id.toString()))
-      .emit('message', newMessage);
-    console.log('newMessage: ', newMessage);
+    this.server.to(keys).emit('message', newMessage);
     return newMessage;
   }
 }

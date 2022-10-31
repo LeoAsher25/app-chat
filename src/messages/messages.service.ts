@@ -14,12 +14,30 @@ export class MessagesService {
     @InjectModel(Room.name) private readonly roomModel: Model<Room>,
   ) {}
 
-  async create(createMessageDto: CreateMessageDto) {
+  isJsonObject(strData) {
+    try {
+      JSON.parse(strData);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  async create(createMessageDto: CreateMessageDto | string) {
+    createMessageDto = JSON.stringify({
+      text: 'Hello world111!',
+      roomId: '635a9938f509e6cec6386f28',
+    });
+    console.log('log: ', createMessageDto);
+    if (this.isJsonObject(createMessageDto)) {
+      createMessageDto = JSON.parse(createMessageDto as string);
+    }
+
     const newMessage = new this.messageModel(createMessageDto);
     const room = await this.roomModel
       .findOneAndUpdate(
         {
-          _id: createMessageDto.roomId,
+          _id: (createMessageDto as CreateMessageDto).roomId,
         },
         {
           $push: {
