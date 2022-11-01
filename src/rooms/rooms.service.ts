@@ -11,6 +11,24 @@ export class RoomsService {
     @InjectModel(Room.name) private readonly roomModel: Model<Room>,
   ) {}
   async create(createRoomDto: CreateRoomDto) {
+    if (createRoomDto.members.length === 2) {
+      const room = await this.roomModel.findOne(
+        {
+          members: createRoomDto.members[1],
+        },
+        {
+          __v: 0,
+          updatedAt: 0,
+          messages: {
+            updatedAt: 0,
+            __v: 0,
+          },
+        },
+      );
+      if (room) {
+        return room;
+      }
+    }
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
       adminId: createRoomDto.members[0],
