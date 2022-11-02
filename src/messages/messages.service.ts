@@ -53,6 +53,11 @@ export class MessagesService {
     return `This action returns all messages`;
   }
 
+  async getMessageByRoomId(roomId: string): Promise<Message[]> {
+    const messages = await this.messageModel.find({ roomId: roomId });
+    return messages;
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} message`;
   }

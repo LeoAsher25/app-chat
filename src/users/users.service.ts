@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, Schema } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,6 +12,12 @@ export class UsersService {
   ) {}
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
+  }
+
+  async getProfile(userId: string): Promise<any> {
+    const user = await this.userModel.findById(userId);
+    user.password = null;
+    return user;
   }
 
   findAll() {

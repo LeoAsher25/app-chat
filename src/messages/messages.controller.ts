@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query } from '@nestjs/common';
 
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
@@ -8,5 +8,10 @@ export class MessagesController {
   @Post()
   create(@Body() createMessageDto: CreateMessageDto) {
     return this.messagesService.create(createMessageDto);
+  }
+
+  @Get()
+  get(@Query('room') roomId: string) {
+    return this.messagesService.getMessageByRoomId(roomId);
   }
 }
