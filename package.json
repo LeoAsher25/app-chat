@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "nest start",
+    "devu": "sudo nest start",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

@@ -8,6 +8,7 @@ export class Room extends Document {
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     minlength: 2,
+    min: 2,
   })
   members: [User];
 
@@ -20,8 +21,11 @@ export class Room extends Document {
   @Prop()
   avatar: string;
 
-  @Prop()
-  isGroup: boolean;
+  // @Prop()
+  // isGroup: boolean;
+
+  @Prop(String)
+  lastMessage: string;
 
   @Prop()
   createdAt?: Date;

@@ -11,8 +11,8 @@ export class Message extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   senderId: User;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true })
-  roomId: Room;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true })
+  // roomId: Room;
 
   @Prop()
   createdAt?: Date;
