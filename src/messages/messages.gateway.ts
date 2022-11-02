@@ -62,6 +62,7 @@ export class MessagesGateway
     const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
     const fromUser = await this.authService.verifyToken(accessToken);
     createMessageDto.senderId = fromUser._id;
+    console.log('createMessageDto: ', createMessageDto);
 
     const { room, newMessage } = await this.messagesService.create(
       createMessageDto,
