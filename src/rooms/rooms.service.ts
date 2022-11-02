@@ -19,11 +19,11 @@ export class RoomsService {
   }
 
   findAll() {
-    return `This action returns all rooms`;
+    return this.roomModel.find();
   }
 
-  async findOne(id: string) {
-    return await this.roomModel.findById(id).lean();
+  findOne(id: string) {
+    return this.roomModel.findById(id).lean();
   }
 
   update(id: number, updateRoomDto: UpdateRoomDto) {

@@ -11,7 +11,7 @@ import { MessagesModule } from './messages/messages.module';
   imports: [
     AuthModule,
     MongooseModule.forRoot(
-      'mongodb+srv://leoasher:leoasher@cluster0.fawanbe.mongodb.net/AppChat',
+      'e ',
     ),
     UsersModule,
     RoomsModule,
