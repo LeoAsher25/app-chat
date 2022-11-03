@@ -15,7 +15,7 @@ export class Room extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   adminId: User;
 
-  @Prop()
+  @Prop({ default: '' })
   name: string;
 
   @Prop()
@@ -24,7 +24,7 @@ export class Room extends Document {
   // @Prop()
   // isGroup: boolean;
 
-  @Prop(String)
+  @Prop()
   lastMessage: string;
 
   @Prop()

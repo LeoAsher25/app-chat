@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery, QueryOptions } from 'mongoose';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './rooms.schema';
@@ -14,7 +14,7 @@ export class RoomsService {
     if (createRoomDto.members.length === 2) {
       const room = await this.roomModel.findOne(
         {
-          members: createRoomDto.members[1],
+          members: { $all: createRoomDto.members, $size: 2 },
         },
         {
           __v: 0,
@@ -32,12 +32,17 @@ export class RoomsService {
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
       adminId: createRoomDto.members[0],
+      name: createRoomDto.name,
     });
-    return await newRoom.save();
+    return newRoom.save();
   }
 
-  findAll() {
-    return this.roomModel.find();
+  findAll(
+    filter: FilterQuery<Room>,
+    returnedFields?: (keyof Room)[],
+    options?: QueryOptions<Room>,
+  ) {
+    return this.roomModel.find(filter, returnedFields, options);
   }
 
   findOne(id: string) {

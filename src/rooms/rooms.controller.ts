@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { Room } from './rooms.schema';
 
 @Controller('rooms')
 export class RoomsController {
@@ -22,7 +24,7 @@ export class RoomsController {
 
   @Get()
   findAll() {
-    return this.roomsService.findAll();
+    return this.roomsService.findAll({}, ['name', 'avatar']);
   }
 
   @Get(':id')
