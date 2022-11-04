@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from 'src/auth/auth.module';
 import { RoomsModule } from 'src/rooms/rooms.module';
-import { Room, RoomSchema } from 'src/rooms/rooms.schema';
+import { Room, RoomSchema } from 'src/rooms/room.schema';
 import { MessagesGateway } from './messages.gateway';
-import { Message, MessageSchema } from './messages.schema';
+import { Message, MessageSchema } from './message.schema';
 import { MessagesService } from './messages.service';
 
 @Module({

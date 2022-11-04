@@ -2,10 +2,10 @@ import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { WsException } from '@nestjs/websockets';
 import mongoose, { Model } from 'mongoose';
-import { Room } from 'src/rooms/rooms.schema';
+import { Room } from 'src/rooms/room.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { Message } from './messages.schema';
+import { Message } from './message.schema';
 
 @Injectable()
 export class MessagesService {
