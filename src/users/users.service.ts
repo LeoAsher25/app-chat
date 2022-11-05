@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './users.schema';
+import { User } from './user.schema';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +19,13 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userModel.findOne(
+      { _id: id },
+      {
+        password: 0,
+        __v: 0,
+      },
+    );
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

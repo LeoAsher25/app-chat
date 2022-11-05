@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery, QueryOptions } from 'mongoose';
+import mongoose, { FilterQuery, Model, QueryOptions } from 'mongoose';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { Room } from './rooms.schema';
+import { Room } from './room.schema';
 
 @Injectable()
 export class RoomsService {
@@ -11,24 +11,59 @@ export class RoomsService {
     @InjectModel(Room.name) private readonly roomModel: Model<Room>,
   ) {}
   async create(createRoomDto: CreateRoomDto) {
-    if (createRoomDto.members.length === 2) {
-      const room = await this.roomModel.findOne(
+    // check whether personal chat box
+    if (
+      createRoomDto.members.length === 1 &&
+      createRoomDto.members[0].toString() === createRoomDto.adminId.toString()
+    ) {
+      const room = await this.roomModel.aggregate([
         {
-          members: { $all: createRoomDto.members, $size: 2 },
-        },
-        {
-          __v: 0,
-          updatedAt: 0,
-          messages: {
-            updatedAt: 0,
-            __v: 0,
+          $addFields: {
+            testID: { $arrayElemAt: ['$members', 1] },
           },
         },
-      );
+        {
+          $match: {
+            testID: new mongoose.Types.ObjectId(createRoomDto.adminId),
+          },
+        },
+        {
+          $project: {
+            testID: 0,
+          },
+        },
+      ]);
+      // check whether personal chat box exist
+      if (room.length > 0) {
+        return room[0];
+      } else {
+        // else create new one
+        createRoomDto.members.push(createRoomDto.adminId);
+      }
+    }
+    // check whether single box chat
+    else if (createRoomDto.members.length === 2) {
+      const room = await this.roomModel
+        .findOne(
+          {
+            members: createRoomDto.members[1],
+          },
+          {
+            __v: 0,
+            updatedAt: 0,
+            messages: {
+              updatedAt: 0,
+              __v: 0,
+            },
+          },
+        )
+        .lean();
       if (room) {
+        // check whether chat box exist
         return room;
       }
     }
+    // else create new group chat box
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
       adminId: createRoomDto.members[0],

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Message, MessageSchema } from 'src/messages/messages.schema';
-import { User } from 'src/users/users.schema';
+import { Message, MessageSchema } from 'src/messages/message.schema';
+import { User } from 'src/users/user.schema';
 
 @Schema({ timestamps: true })
 export class Room extends Document {
