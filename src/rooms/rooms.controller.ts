@@ -10,12 +10,20 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+<<<<<<< HEAD
 import mongoose from 'mongoose';
+=======
+import { Request } from 'express';
+>>>>>>> 8426d063b8750db4b30bf75b7323b0d47b42f642
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RequestWithUser } from 'src/common/types';
 import { UsersService } from 'src/users/users.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8426d063b8750db4b30bf75b7323b0d47b42f642
 import { RoomsService } from './rooms.service';
 @UseGuards(JwtAuthGuard)
 @Controller('rooms')
