@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RequestWithUser } from 'src/common/types';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -32,8 +33,11 @@ export class RoomsController {
   }
 
   @Get()
-  findAll() {
-    return this.roomsService.findAll({}, ['name', 'avatar']);
+  findAll(@Req() req: RequestWithUser) {
+    return this.roomsService.findAll({ userId: req.user._id }, [
+      'name',
+      'avatar',
+    ]);
   }
 
   @Get(':id')
