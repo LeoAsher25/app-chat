@@ -7,7 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response } from 'express';
 import { Model } from 'mongoose';
-import { User } from 'src/users/users.schema';
+import { User } from 'src/users/user.schema';
 import { RegisterData } from './dto/register.dto';
 
 @Injectable()

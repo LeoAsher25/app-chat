@@ -1,30 +1,54 @@
 import {
-  Controller,
-  Get,
-  Post,
+  BadRequestException,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { RoomsService } from './rooms.service';
+import mongoose from 'mongoose';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RequestWithUser } from 'src/common/types';
+import { UsersService } from 'src/users/users.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { Room } from './rooms.schema';
-
+import { RoomsService } from './rooms.service';
+@UseGuards(JwtAuthGuard)
 @Controller('rooms')
 export class RoomsController {
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(
+    private readonly roomsService: RoomsService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Post()
-  create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomsService.create(createRoomDto);
+  create(
+    @Body() createRoomDto: CreateRoomDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.roomsService.create({
+      ...createRoomDto,
+      adminId: request.user._id,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.roomsService.findAll({}, ['name', 'avatar']);
+  async findAll(@Req() req: any) {
+    const { _id } = req.user;
+    const user = await this.userService.findOne({
+      id: _id,
+    });
+    if (!user) throw new BadRequestException('User not found');
+    return this.roomsService.findAll(
+      {
+        members: user._id,
+      },
+      ['name', 'avatar', 'lastMessage'],
+    );
   }
 
   @Get(':id')

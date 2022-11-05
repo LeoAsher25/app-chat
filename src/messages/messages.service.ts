@@ -1,11 +1,11 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { WsException } from '@nestjs/websockets';
-import { Model } from 'mongoose';
-import { Room } from 'src/rooms/rooms.schema';
+import mongoose, { Model } from 'mongoose';
+import { Room } from 'src/rooms/room.schema';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { Message } from './messages.schema';
+import { Message } from './message.schema';
 
 @Injectable()
 export class MessagesService {
@@ -14,30 +14,15 @@ export class MessagesService {
     @InjectModel(Room.name) private readonly roomModel: Model<Room>,
   ) {}
 
-  isJsonObject(strData) {
-    try {
-      JSON.parse(strData);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
-
-  async create(createMessageDto: CreateMessageDto | string) {
-    createMessageDto = JSON.stringify({
-      text: 'Hello world111!',
-      roomId: '635a9938f509e6cec6386f28',
-    });
-    console.log('log: ', createMessageDto);
-    if (this.isJsonObject(createMessageDto)) {
-      createMessageDto = JSON.parse(createMessageDto as string);
-    }
-
+  async create(createMessageDto: CreateMessageDto) {
     const newMessage = new this.messageModel(createMessageDto);
+    console.log('createMessageDto: ', createMessageDto);
     const room = await this.roomModel
       .findOneAndUpdate(
         {
-          _id: (createMessageDto as CreateMessageDto).roomId,
+          _id: new mongoose.Types.ObjectId(
+            (createMessageDto as CreateMessageDto).roomId,
+          ),
         },
         {
           $push: {

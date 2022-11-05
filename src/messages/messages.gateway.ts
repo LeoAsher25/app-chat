@@ -12,6 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { AllExceptionsFilter } from 'src/common/decorators/filters/WsExceptionFilter';
+import isJsonObject from 'src/common/utils/isJsonObject';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
@@ -57,20 +58,22 @@ export class MessagesGateway
   @SubscribeMessage('send')
   async create(
     @ConnectedSocket() client: Socket,
-    @MessageBody() createMessageDto: CreateMessageDto,
+    @MessageBody() createMessageDto: CreateMessageDto | string,
   ) {
     const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
     const fromUser = await this.authService.verifyToken(accessToken);
-    createMessageDto.senderId = fromUser._id;
+    if (isJsonObject(createMessageDto)) {
+      createMessageDto = JSON.parse(createMessageDto as string);
+    }
+    (createMessageDto as CreateMessageDto).senderId = fromUser._id;
 
     const { room, newMessage } = await this.messagesService.create(
-      createMessageDto,
+      createMessageDto as CreateMessageDto,
     );
-
     if (!room) {
       throw new WsException({
         error: 'Bad Request',
-        message: 'Id not found',
+        message: "Room's Id not found",
       });
     }
 

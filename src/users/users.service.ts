@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, QueryOptions } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './users.schema';
+import { User } from './user.schema';
 
 @Injectable()
 export class UsersService {
@@ -18,15 +18,19 @@ export class UsersService {
     return this.userModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(
+    filter: FilterQuery<User>,
+    returnedFields?: (keyof User)[],
+    options?: QueryOptions<User>,
+  ) {
+    return this.userModel.findOne(filter, returnedFields, options).exec();
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} user`;
   }
 }
