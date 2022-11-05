@@ -34,4 +34,12 @@ export class AttachmentsService {
   ): Promise<Attachment> {
     return this.attachmentModel.findOne(filter, returnFields, options).exec();
   }
+
+  download(
+    filter: FilterQuery<Attachment>,
+    returnFields?: string[],
+    options?: QueryOptions,
+  ): Promise<Attachment> {
+    return this.attachmentModel.findOne(filter, returnFields, options).exec();
+  }
 }

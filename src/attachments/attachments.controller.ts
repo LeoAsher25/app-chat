@@ -25,6 +25,7 @@ import { UsersService } from 'src/users/users.service';
 import { IBatchUploadFile, IUploadFile } from './dto/attachment.interface';
 import { AttachmentsService } from './attachments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Attachment } from './attachment.schema';
 
 @Controller('attachments')
 export class AttachmentsController {
@@ -92,7 +93,17 @@ export class AttachmentsController {
   }
 
   @Get(':id')
-  async getFile(
+  async getFile(@Param('id') id: string): Promise<Attachment> {
+    if (!mongoose.Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid attachment id');
+    const file = await this.attachmentsService.download({ _id: id });
+    if (!file) throw new NotFoundException('File not found');
+
+    return file;
+  }
+
+  @Get(':id/download')
+  async downloadFile(
     @Param('id') id: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<StreamableFile> {

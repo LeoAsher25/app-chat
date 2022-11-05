@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 // import { IsObjectId } from 'src/common/decorators/validations/IsObjectId';
 import { IsObjectId } from '../../common/decorators/validations/IsObjectId';
 
@@ -14,4 +14,8 @@ export class CreateMessageDto {
   @IsNotEmpty()
   @IsObjectId()
   roomId: string;
+
+  @IsArray()
+  @IsObjectId()
+  attachments: string[];
 }
