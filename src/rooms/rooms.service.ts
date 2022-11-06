@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { FilterQuery, Model, QueryOptions } from 'mongoose';
+import { UsersService } from 'src/users/users.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './room.schema';
@@ -9,6 +10,8 @@ import { Room } from './room.schema';
 export class RoomsService {
   constructor(
     @InjectModel(Room.name) private readonly roomModel: Model<Room>,
+    // @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly userService: UsersService,
   ) {}
   async create(createRoomDto: CreateRoomDto) {
     // check whether personal chat box
@@ -19,17 +22,17 @@ export class RoomsService {
       const room = await this.roomModel.aggregate([
         {
           $addFields: {
-            testID: { $arrayElemAt: ['$members', 1] },
+            memberId: { $arrayElemAt: ['$members', 1] },
           },
         },
         {
           $match: {
-            testID: new mongoose.Types.ObjectId(createRoomDto.adminId),
+            memberId: new mongoose.Types.ObjectId(createRoomDto.adminId),
           },
         },
         {
           $project: {
-            testID: 0,
+            memberId: 0,
           },
         },
       ]);
@@ -46,7 +49,10 @@ export class RoomsService {
       const room = await this.roomModel
         .findOne(
           {
-            members: createRoomDto.members[1],
+            members: {
+              $size: 2,
+              $all: createRoomDto.members,
+            },
           },
           {
             __v: 0,
@@ -64,11 +70,25 @@ export class RoomsService {
       }
     }
     // else create new group chat box
+    if (!createRoomDto.name) {
+      const members = await this.userService.findAll(
+        {
+          _id: {
+            $in: createRoomDto.members,
+          },
+        },
+        ['_id', 'username'],
+      );
+      createRoomDto.name = members.map((mem) => mem.username).join(', ');
+      // createRoomDto.name = members;
+      console.log('members: ', members, createRoomDto);
+    }
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
       adminId: createRoomDto.members[0],
       name: createRoomDto.name,
     });
+
     return newRoom.save();
   }
 

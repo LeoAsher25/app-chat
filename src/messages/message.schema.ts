@@ -1,6 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { Attachment } from 'src/attachments/attachment.schema';
+import { IResponseAttchment } from 'src/attachments/dto/attachment.interface';
 import { User } from 'src/users/user.schema';
 
 @Schema({ timestamps: true })
@@ -27,7 +28,7 @@ export class Message extends Document {
       size: Number,
     }),
   )
-  attachments: Attachment[];
+  attachments: IResponseAttchment;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

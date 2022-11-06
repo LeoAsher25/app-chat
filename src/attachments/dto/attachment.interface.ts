@@ -9,3 +9,9 @@ export interface IUploadFile {
 export interface IBatchUploadFile {
   attachments: IUploadFile[];
 }
+
+export interface IResponseAttchment {
+  _id: string;
+  filename: string;
+  size: number;
+}

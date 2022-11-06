@@ -1,7 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { ILastMessage } from 'src/messages/dto/message.interface';
 import { Message, MessageSchema } from 'src/messages/message.schema';
-import { User } from 'src/users/user.schema';
+import { User, UserSchema } from 'src/users/user.schema';
 
 @Schema({ timestamps: true })
 export class Room extends Document {
@@ -15,7 +16,7 @@ export class Room extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   adminId: User;
 
-  @Prop({ default: '' })
+  @Prop({ required: true, default: 'Chat Box' })
   name: string;
 
   @Prop()
@@ -24,8 +25,14 @@ export class Room extends Document {
   // @Prop()
   // isGroup: boolean;
 
-  @Prop()
-  lastMessage: string;
+  @Prop(
+    raw({
+      content: String,
+      sender: UserSchema,
+      createdAt: Date,
+    }),
+  )
+  lastMessage: ILastMessage;
 
   @Prop()
   createdAt?: Date;
