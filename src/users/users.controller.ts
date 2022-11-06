@@ -81,10 +81,6 @@ export class UsersController {
         },
       },
       ['_id', 'firstName', 'lastName', 'avatar', 'username'],
-      {
-        limit: query.limit || 10,
-        skip: (query.limit || 10) * (query.page || 0),
-      },
     );
   }
 }

@@ -6,13 +6,13 @@ export class SearchUserDto {
   @IsString()
   name: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  limit: number;
+  //   @Type(() => Number)
+  //   @IsNumber()
+  //   @Min(1)
+  //   limit: number;
 
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  page: number;
+  //   @Type(() => Number)
+  //   @IsNumber()
+  //   @Min(0)
+  //   page: number;
 }
