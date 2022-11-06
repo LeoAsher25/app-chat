@@ -1,13 +1,15 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { User, UserSchema } from 'src/users/user.schema';
 import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import AuthMiddleware from './auth.middleware';
 import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { JwtModule } from '@nestjs/jwt';
 import { authConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './local.strategy';
 
 @Module({
   controllers: [AuthController],
@@ -18,6 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
       secret: authConstants.secret,
       signOptions: { expiresIn: '3600s' },
     }),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, AuthMiddleware],
   exports: [AuthService],
