@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { FilterQuery, Model, QueryOptions } from 'mongoose';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './room.schema';
@@ -67,16 +67,21 @@ export class RoomsService {
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
       adminId: createRoomDto.members[0],
+      name: createRoomDto.name,
     });
-    return await newRoom.save();
+    return newRoom.save();
   }
 
-  findAll() {
-    return `This action returns all rooms`;
+  findAll(
+    filter: FilterQuery<Room>,
+    returnedFields?: (keyof Room)[],
+    options?: QueryOptions<Room>,
+  ) {
+    return this.roomModel.find(filter, returnedFields, options);
   }
 
-  async findOne(id: string) {
-    return await this.roomModel.findById(id).lean();
+  findOne(id: string) {
+    return this.roomModel.findById(id).lean();
   }
 
   update(id: number, updateRoomDto: UpdateRoomDto) {

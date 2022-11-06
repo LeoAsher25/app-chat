@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -6,12 +7,18 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  Req,
   Request,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { SearchUserDto } from './dto/search-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './user.schema';
 import { UsersService } from './users.service';
 
 @UseGuards(JwtAuthGuard)
@@ -31,21 +38,63 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.usersService.findAll({}, [
+      'id',
+      'username',
+      'firstName',
+      'lastName',
+    ]);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne({
+      _id: id,
+    });
+    if (!user) throw new BadRequestException('User not found');
+    return this.usersService.findOne(
+      {
+        _id: id,
+      },
+      ['id', 'username', 'firstName', 'lastName'],
+    );
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
+  }
+
+  @Get('/search')
+  @UsePipes(new ValidationPipe())
+  async searchUsers(@Query() query: SearchUserDto): Promise<User[]> {
+    return this.usersService.getUserMetaData(
+      {
+        $expr: {
+          $or: [
+            {
+              $regexMatch: {
+                input: { $concat: ['$firstName', ' ', '$lastName'] },
+                regex: query.name,
+                options: 'i',
+              },
+            },
+            {
+              $regexMatch: {
+                input: { $concat: ['$lastName', ' ', '$firstName'] },
+                regex: query.name,
+                options: 'i',
+              },
+            },
+          ],
+        },
+      },
+      ['_id', 'firstName', 'lastName', 'avatar', 'username'],
+    );
   }
 }

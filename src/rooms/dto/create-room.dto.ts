@@ -12,6 +12,7 @@ export class CreateRoomDto {
   @IsObjectId()
   adminId: string;
 
+  @IsNotEmpty()
   @IsString()
   name: string;
 }
