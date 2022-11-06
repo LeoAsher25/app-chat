@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Request,
   UseGuards,
   UsePipes,
@@ -34,17 +36,29 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.usersService.findAll({}, [
+      'id',
+      'username',
+      'firstName',
+      'lastName',
+    ]);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne({
-  //     id,
-  //   });
-  // }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne({
+      _id: id,
+    });
+    if (!user) throw new BadRequestException('User not found');
+    return this.usersService.findOne(
+      {
+        _id: id,
+      },
+      ['id', 'username', 'firstName', 'lastName'],
+    );
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

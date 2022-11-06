@@ -15,10 +15,13 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return this.userModel.find();
+  findAll(
+    filter: FilterQuery<User>,
+    returnFields?: string[],
+    queryOptions?: QueryOptions,
+  ): Promise<User[]> {
+    return this.userModel.find(filter, returnFields, queryOptions).exec();
   }
-
   findOne(
     filter: FilterQuery<User>,
     returnedFields?: (keyof User)[],

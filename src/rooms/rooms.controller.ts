@@ -38,6 +38,7 @@ export class RoomsController {
   @Get()
   async findAll(@Req() req: any) {
     const { _id } = req.user;
+    console.log(_id);
     const user = await this.userService.findOne({
       id: _id,
     });
