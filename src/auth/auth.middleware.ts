@@ -16,7 +16,6 @@ export default class AuthMiddleware {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
   async use(req: any, res: any, next: (error?: any) => void) {
-    console.log('this: ', this);
     const requestData: RegisterData = req.body;
     if (
       !requestData.username ||
@@ -38,7 +37,6 @@ export default class AuthMiddleware {
       username: requestData.username,
     });
     if (user) {
-      console.log('user: ', user);
       // return res
       //   .status(HttpStatus.CONFLICT)
       //   .json(ErrorResponse(HttpStatus.CONFLICT, 'Username is already in use'));
@@ -55,7 +53,6 @@ export default class AuthMiddleware {
     res: Response,
     next: (error?: any) => void,
   ): Promise<void> {
-    console.log('this: ', this);
     const requestData: RegisterData = req.body;
     if (
       !requestData.username ||

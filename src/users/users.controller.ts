@@ -38,36 +38,15 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.usersService.findAll({}, [
-      'id',
-      'username',
-      'firstName',
-      'lastName',
-    ]);
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.usersService.findOne({
-      _id: id,
-    });
-    if (!user) throw new BadRequestException('User not found');
-    return this.usersService.findOne(
+    return this.usersService.findAll(
+      {},
       {
-        _id: id,
+        id: 1,
+        username: 1,
+        firstName: 1,
+        lastName: 1,
       },
-      ['id', 'username', 'firstName', 'lastName'],
     );
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
   }
 
   @Get('/search')
@@ -96,5 +75,32 @@ export class UsersController {
       },
       ['_id', 'firstName', 'lastName', 'avatar', 'username'],
     );
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne({
+      _id: id,
+    });
+    if (!user) throw new BadRequestException('User not found');
+    return this.usersService.findOne(
+      {
+        _id: id,
+      },
+      // ['id', 'username', 'firstName', 'lastName'],
+      {
+        password: 0,
+      },
+    );
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }

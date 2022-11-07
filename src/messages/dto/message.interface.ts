@@ -1,7 +1,9 @@
 import { User } from 'src/users/user.schema';
 
 export interface ILastMessage {
-  content: string;
-  sender: User;
+  _id: string;
+  senderId: string;
+  attachments: [];
+  text: string;
   createdAt: Date;
 }

@@ -40,7 +40,6 @@ export class AuthService {
       const payload: JwtPayload = await this.jwtService.verify(token, {
         secret: authConstants.secret,
       });
-      console.log('payload: ', payload);
       const user: User = await this.userModel
         .findOne({ _id: payload.sub })
         .lean();

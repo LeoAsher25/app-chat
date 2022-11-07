@@ -25,13 +25,9 @@ export class Room extends Document {
   // @Prop()
   // isGroup: boolean;
 
-  @Prop(
-    raw({
-      content: String,
-      sender: UserSchema,
-      createdAt: Date,
-    }),
-  )
+  @Prop({
+    type: MessageSchema,
+  })
   lastMessage: ILastMessage;
 
   @Prop()

@@ -38,22 +38,27 @@ export class RoomsController {
   @Get()
   async findAll(@Req() req: any) {
     const { _id } = req.user;
-    console.log(_id);
     const user = await this.userService.findOne({
-      id: _id,
+      _id: _id,
     });
     if (!user) throw new BadRequestException('User not found');
-    return this.roomsService.findAll(
+    const rooms = await this.roomsService.findAll(
       {
         members: user._id,
       },
-      ['name', 'avatar', 'lastMessage'],
+      // ['name', 'avatar', 'lastMessage'],
+      {
+        name: 1,
+        _id: 1,
+        lastMessage: 1,
+      },
     );
+    return rooms;
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.roomsService.findOne(id);
+    return this.roomsService.findOne({ _id: id });
   }
 
   @Patch(':id')

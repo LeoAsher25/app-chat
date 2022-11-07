@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AttachmentsModule } from 'src/attachments/attachments.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { RoomsModule } from 'src/rooms/rooms.module';
 import { Message, MessageSchema } from './message.schema';
@@ -13,6 +14,7 @@ import { MessagesService } from './messages.service';
     // MongooseModule.forFeature([{ name: Room.name, schema: RoomSchema }]),
     RoomsModule,
     AuthModule,
+    AttachmentsModule,
   ],
 })
 export class MessagesModule {}

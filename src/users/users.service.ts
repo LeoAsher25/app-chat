@@ -17,17 +17,17 @@ export class UsersService {
 
   findAll(
     filter: FilterQuery<User>,
-    returnFields?: string[],
+    returnFields?: { [key: string]: 0 | 1 },
     queryOptions?: QueryOptions,
   ): Promise<User[]> {
     return this.userModel.find(filter, returnFields, queryOptions).exec();
   }
-  findOne(
+  async findOne(
     filter: FilterQuery<User>,
-    returnedFields?: (keyof User)[],
+    returnedFields?: { [key: string]: 0 | 1 },
     options?: QueryOptions<User>,
   ) {
-    return this.userModel.findOne(filter, returnedFields, options).exec();
+    return await this.userModel.findOne(filter, returnedFields, options).exec();
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

@@ -10,6 +10,7 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AttachmentsService } from 'src/attachments/attachments.service';
 import { AuthService } from 'src/auth/auth.service';
 import { AllExceptionsFilter } from 'src/common/decorators/filters/WsExceptionFilter';
 import isJsonObject from 'src/common/utils/isJsonObject';
@@ -31,6 +32,7 @@ export class MessagesGateway
     private readonly messagesService: MessagesService,
     private readonly authService: AuthService,
     private readonly rommsService: RoomsService,
+    private readonly attachmentsService: AttachmentsService,
   ) {}
 
   async handleConnection(client: Socket): Promise<void> {
@@ -62,6 +64,31 @@ export class MessagesGateway
   ) {
     const accessToken = client.handshake?.headers?.authorization?.split(' ')[1];
     const fromUser = await this.authService.verifyToken(accessToken);
+    let attachments = [];
+    if (
+      (createMessageDto as CreateMessageDto).attachments &&
+      (createMessageDto as CreateMessageDto).attachments?.length > 0
+    ) {
+      attachments = await this.attachmentsService.find(
+        {
+          _id: {
+            $in: (createMessageDto as CreateMessageDto).attachments,
+          },
+        },
+        {
+          _id: 1,
+          filename: 1,
+          size: 1,
+        },
+      );
+
+      if (attachments.length === 0) {
+        throw new WsException({
+          error: 'Bad Request',
+          message: "Attchment's Id not found",
+        });
+      }
+    }
     if (isJsonObject(createMessageDto)) {
       createMessageDto = JSON.parse(createMessageDto as string);
     }
@@ -77,6 +104,17 @@ export class MessagesGateway
       });
     }
 
+    const message = {
+      text: newMessage.text,
+      sender: fromUser,
+      attachments: attachments || [],
+      createdAt: newMessage.createdAt,
+      roomId: room._id,
+    };
+
+    // if (attachments && attachments?.length > 0) {
+    //   newMessage.attachments = attachments;
+    // }
     // get list of client id in the room
     const stringIdList = room.members.map((item) => item.toString());
     const keys = Object.keys(this.clients).reduce((acc, cur) => {
@@ -90,7 +128,7 @@ export class MessagesGateway
     // this.server.to(client.id.toString()).emit('sent', newMessage);
 
     // emit sent event to the others in the room
-    this.server.to(keys).emit('message', newMessage);
-    return newMessage;
+    this.server.to(keys).emit('message', message);
+    return message;
   }
 }

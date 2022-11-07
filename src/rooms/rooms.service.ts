@@ -77,11 +77,14 @@ export class RoomsService {
             $in: createRoomDto.members,
           },
         },
-        ['_id', 'username'],
+        // ['_id', 'username'],
+        {
+          _id: 1,
+          username: 1,
+        },
       );
       createRoomDto.name = members.map((mem) => mem.username).join(', ');
       // createRoomDto.name = members;
-      console.log('members: ', members, createRoomDto);
     }
     const newRoom = new this.roomModel({
       members: createRoomDto.members,
@@ -92,16 +95,20 @@ export class RoomsService {
     return newRoom.save();
   }
 
-  findAll(
+  async findAll(
     filter: FilterQuery<Room>,
-    returnedFields?: (keyof Room)[],
+    returnedFields?: { [key: string]: number },
     options?: QueryOptions<Room>,
   ) {
-    return this.roomModel.find(filter, returnedFields, options);
+    return await this.roomModel.find(filter, returnedFields, options);
   }
 
-  findOne(id: string) {
-    return this.roomModel.findById(id).lean();
+  findOne(
+    filter: FilterQuery<Room>,
+    returnedFields?: { [key: string]: number },
+    options?: QueryOptions<Room>,
+  ) {
+    return this.roomModel.findById(filter, returnedFields, options).lean();
   }
 
   update(id: number, updateRoomDto: UpdateRoomDto) {

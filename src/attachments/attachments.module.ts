@@ -42,5 +42,6 @@ import * as multer from 'multer';
   ],
   controllers: [AttachmentsController],
   providers: [AttachmentsService],
+  exports: [MongooseModule, AttachmentsService],
 })
 export class AttachmentsModule {}

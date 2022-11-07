@@ -1,7 +1,5 @@
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Attachment } from 'src/attachments/attachment.schema';
-import { IResponseAttchment } from 'src/attachments/dto/attachment.interface';
 import { User } from 'src/users/user.schema';
 
 @Schema({ timestamps: true })
@@ -12,23 +10,14 @@ export class Message extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   senderId: User;
 
-  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true })
-  // roomId: Room;
-
   @Prop()
   createdAt?: Date;
 
   @Prop()
   updatedAt?: Date;
 
-  @Prop(
-    raw({
-      _id: String,
-      filename: String,
-      size: Number,
-    }),
-  )
-  attachments: IResponseAttchment;
+  @Prop({ type: [String] })
+  attachments: string[];
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

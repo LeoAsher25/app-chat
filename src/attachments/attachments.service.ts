@@ -21,7 +21,7 @@ export class AttachmentsService {
 
   find(
     filter: FilterQuery<Attachment>,
-    returnFields?: string[],
+    returnFields?: { [key: string]: 0 | 1 },
     queryOptions?: QueryOptions,
   ): Promise<Attachment[]> {
     return this.attachmentModel.find(filter, returnFields, queryOptions).exec();
@@ -29,7 +29,7 @@ export class AttachmentsService {
 
   findOne(
     filter: FilterQuery<Attachment>,
-    returnFields?: string[],
+    returnFields?: { [key: string]: 0 | 1 },
     options?: QueryOptions,
   ): Promise<Attachment> {
     return this.attachmentModel.findOne(filter, returnFields, options).exec();
@@ -37,7 +37,7 @@ export class AttachmentsService {
 
   download(
     filter: FilterQuery<Attachment>,
-    returnFields?: string[],
+    returnFields?: { [key: string]: 0 | 1 },
     options?: QueryOptions,
   ): Promise<Attachment> {
     return this.attachmentModel.findOne(filter, returnFields, options).exec();
