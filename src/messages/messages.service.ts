@@ -54,7 +54,9 @@ export class MessagesService {
   }
 
   async getMessageByRoomId(roomId: string): Promise<Message[]> {
-    const messages = await this.messageModel.find({ roomId: roomId });
+    const messages = await this.messageModel
+      .find({ roomId: roomId })
+      .populate({ path: 'sender', select: { _id: 1, username: 1 } });
     return messages;
   }
 

@@ -66,6 +66,7 @@ export class MessagesGateway
     const { room, newMessage } = await this.messagesService.create(
       createMessageDto,
     );
+    console.log(client);
 
     if (!room) {
       throw new WsException({

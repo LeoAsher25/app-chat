@@ -1,3 +1,4 @@
+import { Room } from 'src/rooms/rooms.schema';
 import {
   Controller,
   Get,
@@ -26,8 +27,8 @@ export class RoomsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomsService.findOne(id);
+  async getRoomById(@Param('id') id: string): Promise<Room> {
+    return this.roomsService.getRoomDetail(id);
   }
 
   @Patch(':id')
