@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { SearchUserDto } from './dto/search-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.schema';
 import { UsersService } from './users.service';
@@ -35,22 +34,22 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll(
-      {},
-      {
-        id: 1,
-        username: 1,
-        firstName: 1,
-        lastName: 1,
-      },
-    );
-  }
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll(
+  //     {},
+  //     {
+  //       id: 1,
+  //       username: 1,
+  //       firstName: 1,
+  //       lastName: 1,
+  //     },
+  //   );
+  // }
 
-  @Get('/search')
+  @Get()
   @UsePipes(new ValidationPipe())
-  async searchUsers(@Query() query: SearchUserDto): Promise<User[]> {
+  async searchUsers(@Query() query: any): Promise<User[]> {
     return this.usersService.getUserMetaData(
       {
         $expr: {
@@ -58,17 +57,17 @@ export class UsersController {
             {
               $regexMatch: {
                 input: { $concat: ['$firstName', ' ', '$lastName'] },
-                regex: query.name,
+                regex: query.name || '',
                 options: 'i',
               },
             },
-            {
-              $regexMatch: {
-                input: { $concat: ['$lastName', ' ', '$firstName'] },
-                regex: query.name,
-                options: 'i',
-              },
-            },
+            // {
+            //   $regexMatch: {
+            //     input: { $concat: ['$lastName', ' ', '$firstName'] },
+            //     regex: query.name,
+            //     options: 'i',
+            //   },
+            // },
           ],
         },
       },

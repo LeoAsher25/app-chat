@@ -15,42 +15,50 @@ export class RoomsService {
   ) {}
   async create(createRoomDto: CreateRoomDto) {
     // check whether personal chat box
-    if (
-      createRoomDto.members.length === 1 &&
-      createRoomDto.members[0].toString() === createRoomDto.adminId.toString()
-    ) {
-      const room = await this.roomModel.aggregate([
-        {
-          $addFields: {
-            memberId: { $arrayElemAt: ['$members', 1] },
-          },
-        },
-        {
-          $match: {
-            memberId: new mongoose.Types.ObjectId(createRoomDto.adminId),
-          },
-        },
-        {
-          $project: {
-            memberId: 0,
-          },
-        },
-      ]);
-      // check whether personal chat box exist
-      if (room.length > 0) {
-        return room[0];
-      } else {
-        // else create new one
-        createRoomDto.members.push(createRoomDto.adminId);
-      }
-    }
+    // if (createRoomDto.members.length === 1) {
+    //   if (
+    //     createRoomDto.members[0].toString() === createRoomDto.adminId.toString()
+    //   ) {
+    //     const room = await this.roomModel.findOne({
+    //       members
+    //     })
+    //     // const room = await this.roomModel.aggregate([
+    //     //   {
+    //     //     $addFields: {
+    //     //       memberId: { $arrayElemAt: ['$members', 1] },
+    //     //     },
+    //     //   },
+    //     //   {
+    //     //     $match: {
+    //     //       memberId: new mongoose.Types.ObjectId(createRoomDto.adminId),
+    //     //     },
+    //     //   },
+    //     //   {
+    //     //     $project: {
+    //     //       memberId: 0,
+    //     //     },
+    //     //   },
+    //     // ]);
+    //     // check whether personal chat box exist
+    //     if (room.length > 0) {
+    //       return room[0];
+    //     } else {
+    //       // else create new one
+    //       createRoomDto.members.push(createRoomDto.adminId);
+    //     }
+    //   } else {
+    //   }
+    // }
     // check whether single box chat
-    else if (createRoomDto.members.length === 2) {
+    if (
+      createRoomDto.members.length === 1 ||
+      createRoomDto.members.length === 2
+    ) {
       const room = await this.roomModel
         .findOne(
           {
             members: {
-              $size: 2,
+              $size: createRoomDto.members.length,
               $all: createRoomDto.members,
             },
           },
@@ -61,6 +69,7 @@ export class RoomsService {
               updatedAt: 0,
               __v: 0,
             },
+            lastMessage: 0,
           },
         )
         .lean();
