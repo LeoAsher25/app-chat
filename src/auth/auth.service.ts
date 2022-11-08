@@ -41,7 +41,15 @@ export class AuthService {
         secret: authConstants.secret,
       });
       const user: User = await this.userModel
-        .findOne({ _id: payload.sub })
+        .findOne(
+          { _id: payload.sub },
+          {
+            _id: 1,
+            username: 1,
+            firstName: 1,
+            lastName: 1,
+          },
+        )
         .lean();
       if (!user)
         throw new UnauthorizedException({
