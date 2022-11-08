@@ -14,7 +14,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RequestWithUser } from 'src/common/types';
 import { UsersService } from 'src/users/users.service';
 import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { AddMembersDto, UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './room.schema';
 import { RoomsService } from './rooms.service';
 @UseGuards(JwtAuthGuard)
@@ -55,6 +55,11 @@ export class RoomsController {
       },
     );
     return rooms;
+  }
+
+  @Patch('/add-members')
+  async addMembers(@Body() body: AddMembersDto) {
+    return this.roomsService.addMembers(body.roomId, body.membersId);
   }
 
   @Get(':id')

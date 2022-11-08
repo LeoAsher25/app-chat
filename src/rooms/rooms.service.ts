@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConsoleLogger,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { FilterQuery, Model, QueryOptions } from 'mongoose';
 import { UsersService } from 'src/users/users.service';
@@ -134,5 +139,54 @@ export class RoomsService {
       { path: 'adminId', select: { _id: 1, username: 1 } },
     ]);
     return room;
+  }
+
+  async addMembers(roomId: string, membersId: string[]) {
+    console.log('param:', roomId, membersId);
+    const personalRoom = await this.roomModel.findOne({
+      _id: new mongoose.Types.ObjectId(roomId),
+    });
+    if (!personalRoom) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Room's id not found",
+      });
+    }
+    if (
+      personalRoom.members.length === 1 ||
+      personalRoom.members.length === 2
+    ) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Can't add member to personal room",
+      });
+    }
+
+    if (
+      membersId.some((member) =>
+        personalRoom.members.includes(member as string),
+      )
+    ) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'User is already be member',
+      });
+    }
+
+    return await this.roomModel.findOneAndUpdate(
+      {
+        _id: roomId,
+        members: {
+          $size: {
+            $gt: 2,
+          },
+        },
+      },
+      {
+        $push: {
+          members: membersId,
+        },
+      },
+    );
   }
 }

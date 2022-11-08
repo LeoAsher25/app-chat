@@ -11,10 +11,10 @@ export class Room extends Document {
     minlength: 2,
     min: 2,
   })
-  members: [User];
+  members: string[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  adminId: User;
+  adminId: string;
 
   @Prop({ required: true, default: 'Chat Box' })
   name: string;
