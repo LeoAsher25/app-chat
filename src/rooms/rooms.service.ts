@@ -118,4 +118,12 @@ export class RoomsService {
   remove(id: number) {
     return `This action removes a #${id} room`;
   }
+
+  async getRoomDetail(roomId: string): Promise<Room> {
+    const room = await this.roomModel.findById(roomId).populate([
+      { path: 'members', select: { _id: 1, username: 1 } },
+      { path: 'adminId', select: { _id: 1, username: 1 } },
+    ]);
+    return room;
+  }
 }

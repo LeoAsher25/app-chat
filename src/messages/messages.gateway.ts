@@ -1,4 +1,4 @@
-import { HttpStatus, UseFilters } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,

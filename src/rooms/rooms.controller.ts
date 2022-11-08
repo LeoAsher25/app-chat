@@ -15,6 +15,7 @@ import { RequestWithUser } from 'src/common/types';
 import { UsersService } from 'src/users/users.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { Room } from './room.schema';
 import { RoomsService } from './rooms.service';
 @UseGuards(JwtAuthGuard)
 @Controller('rooms')
@@ -57,8 +58,8 @@ export class RoomsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomsService.findOne({ _id: id });
+  async getRoomById(@Param('id') id: string): Promise<Room> {
+    return this.roomsService.getRoomDetail(id);
   }
 
   @Patch(':id')
