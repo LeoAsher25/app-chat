@@ -23,11 +23,12 @@ import * as multer from 'multer';
           const uniqueSuffix = `-${Date.now()}-${Math.round(
             Math.random() * 1e9,
           )}`;
-          const originalNameLength = file.originalname.lastIndexOf('.');
+          const tranferedName = file.originalname.split(' ').join('_');
+          const originalNameLength = tranferedName.lastIndexOf('.');
           const newName =
-            file.originalname.slice(0, originalNameLength) +
+            tranferedName.slice(0, originalNameLength) +
             uniqueSuffix +
-            file.originalname.slice(originalNameLength);
+            tranferedName.slice(originalNameLength);
 
           cb(null, newName);
         },

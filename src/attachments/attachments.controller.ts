@@ -21,11 +21,11 @@ import { Response } from 'express';
 import { createReadStream, existsSync } from 'fs';
 import mongoose from 'mongoose';
 import { join } from 'path';
-import { UsersService } from 'src/users/users.service';
-import { IBatchUploadFile, IUploadFile } from './dto/attachment.interface';
-import { AttachmentsService } from './attachments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UsersService } from 'src/users/users.service';
 import { Attachment } from './attachment.schema';
+import { AttachmentsService } from './attachments.service';
+import { IBatchUploadFile, IUploadFile } from './dto/attachment.interface';
 
 @Controller('attachments')
 export class AttachmentsController {
@@ -42,7 +42,7 @@ export class AttachmentsController {
   async uploadOne(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: any,
-  ): Promise<IUploadFile> {
+  ): Promise<Attachment> {
     if (!file) throw new BadRequestException('No file uploaded');
     const { mimetype, filename, originalname, size } = file;
     const user = await this.userService.findOne(req.user._id);
@@ -54,12 +54,7 @@ export class AttachmentsController {
       owner: user,
     });
 
-    return {
-      _id: attachment._id,
-      filename: attachment.filename,
-      mimetype,
-      size,
-    };
+    return attachment;
   }
 
   @Post('batch-upload')

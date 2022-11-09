@@ -11,12 +11,12 @@ export class AttachmentsService {
     private readonly attachmentModel: Model<Attachment>,
   ) {}
 
-  create(attachment: CreateAttachmentDto): Promise<Attachment> {
+  async create(attachment: CreateAttachmentDto): Promise<Attachment> {
     const createdAttachment = new this.attachmentModel({
       ...attachment,
       uploadedAt: new Date(),
     });
-    return createdAttachment.save();
+    return await createdAttachment.save();
   }
 
   find(
